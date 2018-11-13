@@ -10,6 +10,9 @@ import android.view.Menu
 import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
+import android.content.Intent
+import pl.sviete.dom.devices.ui.AddDeviceCreator.MainCreatorActivity
+
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -60,22 +63,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         // Handle navigation view item clicks here.
         when (item.itemId) {
             R.id.nav_camera -> {
-                // Handle the camera action
-            }
-            R.id.nav_gallery -> {
-
-            }
-            R.id.nav_slideshow -> {
-
+                val intent = Intent(this, MainCreatorActivity::class.java)
+                startActivity(intent)
             }
             R.id.nav_manage -> {
-
-            }
-            R.id.nav_share -> {
-
-            }
-            R.id.nav_send -> {
-
+                val intent = Intent(this, SettingsActivity::class.java)
+                startActivity(intent)
             }
         }
 
