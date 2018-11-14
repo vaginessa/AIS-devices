@@ -48,12 +48,8 @@ class StartCreatorFragment : Fragment() {
          * Returns a new instance of this fragment for the given section
          * number.
          */
-        fun newInstance(sectionNumber: Int): StartCreatorFragment {
-            val fragment = StartCreatorFragment()
-            val args = Bundle()
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber)
-            fragment.arguments = args
-            return fragment
+        fun newInstance(): StartCreatorFragment {
+            return StartCreatorFragment()
         }
     }
 }

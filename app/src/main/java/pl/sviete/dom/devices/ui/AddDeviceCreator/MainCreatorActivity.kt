@@ -57,12 +57,12 @@ class MainCreatorActivity : AppCompatActivity(), OnNextStepListener {
             // Return a PlaceholderFragment (defined as a static inner class below).
             when (position) {
                 0 -> {
-                    val start = StartCreatorFragment.newInstance(position + 1)
+                    val start = StartCreatorFragment.newInstance()
                     start.setOnNextStepListener(mActivity as OnNextStepListener)
                     return start
                 }
                 1 -> return AplistCreatorFragment.newInstance()
-                else -> return StartCreatorFragment.newInstance(position + 1)
+                else -> return ApDataCreatorFragment.newInstance()
             }
         }
 

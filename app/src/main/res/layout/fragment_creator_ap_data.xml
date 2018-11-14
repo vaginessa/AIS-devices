@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                             xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools"
+                                             android:layout_width="match_parent"
+                                             android:layout_height="match_parent"
+                                             tools:context=".ui.AddDeviceCreator.ApDataCreatorFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+    <TextView
+            android:text="Nazwa"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:id="@+id/textView4"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="8dp" app:layout_constraintTop_toBottomOf="@+id/textView7"
+            android:layout_marginTop="12dp"/>
+    <TextView
+            android:text="Hasło"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView5" android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@+id/editText2" app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="8dp"/>
+    <EditText
+            android:layout_width="356dp"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:ems="10"
+            android:id="@+id/editText" android:layout_marginTop="12dp"
+            app:layout_constraintTop_toBottomOf="@+id/textView5" android:layout_marginStart="8dp"
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginEnd="8dp"
+            app:layout_constraintEnd_toEndOf="parent" app:layout_constraintHorizontal_bias="0.333"/>
+    <EditText
+            android:layout_width="356dp"
+            android:layout_height="wrap_content"
+            android:inputType="textPersonName"
+            android:ems="10"
+            android:id="@+id/editText2"
+            app:layout_constraintTop_toBottomOf="@+id/textView4" android:layout_marginStart="8dp"
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginEnd="8dp"
+            app:layout_constraintEnd_toEndOf="parent" android:layout_marginTop="12dp"/>
+    <Button
+            android:text="Połącz"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/button" app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp" app:layout_constraintBottom_toBottomOf="parent"/>
+    <Button
+            android:text="Cofnij"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/button2" android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toStartOf="@+id/button"
+            android:layout_marginEnd="8dp"/>
+    <TextView
+            android:text='Wybierz "Połącz" by rozpocząć proces połączenia urządzenia do twojej lokalnej sieci WiFi. Podczas tego procesu konieczne jest rozłączenie tego urządzenia z sieci WiFi, zajmie to tylko chwilę.'
+            android:layout_width="367dp"
+            android:layout_height="119dp"
+            android:id="@+id/textView6" android:layout_marginTop="48dp"
+            app:layout_constraintTop_toBottomOf="@+id/editText" app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="8dp" app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
+            app:layout_constraintHorizontal_bias="0.0"/>
+    <TextView
+            android:text="Podaj dane swojej sieci WiFi do której chcesz podłączyć urządzenie AIS"
+            android:layout_width="356dp"
+            android:layout_height="48dp"
+            android:id="@+id/textView7" android:layout_marginTop="8dp"
+            app:layout_constraintTop_toTopOf="parent" app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="8dp" app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="8dp"/>
+
+</android.support.constraint.ConstraintLayout>
