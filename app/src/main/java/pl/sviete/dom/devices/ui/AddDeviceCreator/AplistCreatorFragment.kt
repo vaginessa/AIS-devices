@@ -1,5 +1,8 @@
 package pl.sviete.dom.devices.ui.AddDeviceCreator
 
+import android.content.Context
+import android.location.LocationManager
+import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
@@ -13,6 +16,7 @@ import pl.sviete.dom.devices.net.AccessPointInfo
 
 class AplistCreatorFragment : Fragment() {
 
+    private var mApSelectedListener: OnAPSelectedListener? = null
     private var mWifi: WiFiScanner? = null
     private var mAisAdapter: ArrayAdapter<AccessPointInfo>? = null
     private val mAisList = ArrayList<AccessPointInfo>()
@@ -33,7 +37,10 @@ class AplistCreatorFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        mWifi = WiFiScanner(activity!!.applicationContext)
+        val lm = context!!.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        val wifi = context!!.getSystemService(Context.WIFI_SERVICE) as WifiManager
+
+        mWifi = WiFiScanner(wifi, lm)
 
         mAisAdapter = ArrayAdapter(activity, android.R.layout.simple_list_item_1, mAisList)
         ais_ap_list.adapter = mAisAdapter
@@ -45,6 +52,22 @@ class AplistCreatorFragment : Fragment() {
             loadData()
             swiperefresh.isRefreshing = false
         }
+
+        ais_ap_list.setOnItemClickListener { parent, view, position, id ->
+            val apInfo = parent.getItemAtPosition(position) as AccessPointInfo
+            mApSelectedListener?.OnAPSelected(apInfo)
+        }
+
+        others_ap_list.setOnItemClickListener { parent, view, position, id ->
+            val apInfo = parent.getItemAtPosition(position) as AccessPointInfo
+            mApSelectedListener?.OnAPSelected(apInfo)
+        }
+    }
+
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+        if (context is OnAPSelectedListener)
+            mApSelectedListener = context
     }
 
     override fun setUserVisibleHint(isVisibleToUser: Boolean) {
@@ -57,7 +80,7 @@ class AplistCreatorFragment : Fragment() {
     private fun loadData(){
         mAisList.clear()
         mOthersList.clear()
-        mWifi!!.LookForAP()?.forEach {
+        mWifi!!.GetAccesibleAccessPoints()?.forEach {
             val masks = resources.getStringArray(R.array.ais_device_masks)
             if ((masks.filter { m -> it.ssid.contains(m, true)}).any())
                 mAisList.add(it)
@@ -66,5 +89,9 @@ class AplistCreatorFragment : Fragment() {
         }
         mAisAdapter!!.notifyDataSetChanged()
         mOthersAdapter!!.notifyDataSetChanged()
+    }
+
+    interface OnAPSelectedListener{
+        fun OnAPSelected(apInfo: AccessPointInfo)
     }
 }

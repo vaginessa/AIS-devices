@@ -2,17 +2,21 @@ package pl.sviete.dom.devices.net
 
 import android.content.Context
 import android.location.LocationManager
+import android.net.wifi.WifiConfiguration
 import android.net.wifi.WifiManager
 import android.util.Log
+import android.net.wifi.WifiInfo
 
-class WiFiScanner (context: Context) {
-    private val mContext = context
+
+
+class WiFiScanner (wifiManager: WifiManager, locationManager: LocationManager) {
+    private val mWifiManager = wifiManager
+    private val mLocationManager = locationManager
     private val TAG = WiFiScanner::class.java.simpleName
 
-    fun LookForAP(): List<AccessPointInfo>?{
+    fun GetAccesibleAccessPoints(): List<AccessPointInfo>?{
         try {
-            val manager = mContext.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
-            val scans = manager.scanResults
+            val scans = mWifiManager.scanResults
             if (scans == null) {
                 //  "Failed getting scan results"
             } else if (scans.isEmpty() && !isLocationEnabled()) {
@@ -33,17 +37,54 @@ class WiFiScanner (context: Context) {
         return null
     }
 
-    fun EnableWifi(enabled: Boolean) {
+    fun enableWiFi(enabled: Boolean) {
         try {
-            val manager = mContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
-            manager.isWifiEnabled = enabled
+            mWifiManager.isWifiEnabled = enabled
         } catch (e: Exception) {
             Log.e(TAG, "onReceiveWifiEnable $e")
         }
     }
 
-    fun isLocationEnabled(): Boolean {
-        val lm = mContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        return lm.isProviderEnabled(LocationManager.GPS_PROVIDER)
+    fun getCurrentNetworkId(): Int{
+        val info = mWifiManager.connectionInfo
+        return info.networkId
+    }
+
+    fun removeSsid(ssid: String){
+        val list = mWifiManager.configuredNetworks
+        for (i in list) {
+            if (i.SSID != null && i.SSID == "\"" + ssid + "\"") {
+                mWifiManager.disableNetwork(i.networkId)
+                mWifiManager.removeNetwork(i.networkId)
+                mWifiManager.saveConfiguration()
+            }
+        }
+    }
+
+    fun disableAllNetworks(){
+        val list = mWifiManager.configuredNetworks
+        for (i in list) {
+            mWifiManager.disableNetwork(i.networkId)
+        }
+    }
+
+    fun addNewNetwork(ssid: String): Int {
+        // create new connection
+        val conf = WifiConfiguration()
+        conf.SSID = "\"" + ssid + "\""   // Please note the quotes. String should contain ssid in quotes
+        // For Open network you need to do this:
+        conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE)
+        // Then, you need to add it to Android wifi manager settings:
+        return mWifiManager.addNetwork(conf)
+    }
+
+    fun connectToNetwork(networkId: Int) {
+        mWifiManager.disconnect()
+        mWifiManager.enableNetwork(networkId, true)
+        mWifiManager.reconnect()
+    }
+
+    private fun isLocationEnabled(): Boolean {
+        return mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
     }
 }

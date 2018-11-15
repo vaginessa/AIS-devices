@@ -7,12 +7,13 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import kotlinx.android.synthetic.main.fragment_creator_ap_data.*
 
 import pl.sviete.dom.devices.R
 
 class ApDataCreatorFragment : Fragment() {
 
-    private var listener: OnFragmentInteractionListener? = null
+    private var mAPDataAcceptListener: OnAPDataAcceptListener? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -21,24 +22,22 @@ class ApDataCreatorFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_creator_ap_data, container, false)
     }
 
-    fun onButtonPressed(uri: Uri) {
-        listener?.onFragmentInteraction(uri)
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        btn_cancel.setOnClickListener{
+            mAPDataAcceptListener?.OnAPDataCancel()
+        }
+
+        btn_accept.setOnClickListener{
+            mAPDataAcceptListener?.OnAPDataAccept(txt_ap_name.text.toString(), txt_ap_password.text.toString())
+        }
     }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if (context is OnFragmentInteractionListener) {
-            listener = context
+        if (context is OnAPDataAcceptListener) {
+            mAPDataAcceptListener = context
         }
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        listener = null
-    }
-
-    interface OnFragmentInteractionListener {
-        fun onFragmentInteraction(uri: Uri)
     }
 
     companion object {
@@ -46,5 +45,10 @@ class ApDataCreatorFragment : Fragment() {
         @JvmStatic
         fun newInstance() =
             ApDataCreatorFragment()
+    }
+
+    interface OnAPDataAcceptListener{
+        fun OnAPDataCancel()
+        fun OnAPDataAccept(name: String, password: String)
     }
 }

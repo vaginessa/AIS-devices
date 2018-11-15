@@ -9,7 +9,7 @@ import android.widget.Toast
 import kotlinx.android.synthetic.main.fragment_creator_start.*
 import pl.sviete.dom.devices.R
 import android.app.Activity
-
+import android.content.Context
 
 
 /**
@@ -22,19 +22,25 @@ class StartCreatorFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val rootView = inflater.inflate(R.layout.fragment_creator_start, container, false)
-        return rootView
+        return inflater.inflate(R.layout.fragment_creator_start, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         start_designer_button.setOnClickListener {
-            mNextStepCallback?.onNext()
+            mNextStepCallback?.onStartDesigner()
         }
     }
 
-    fun setOnNextStepListener(activity: OnNextStepListener) {
-        mNextStepCallback = activity
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is OnNextStepListener) {
+            mNextStepCallback = context
+        }
+    }
+
+    interface OnNextStepListener {
+        fun onStartDesigner()
     }
 
     companion object {
