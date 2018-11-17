@@ -12,6 +12,8 @@ import pl.sviete.dom.devices.net.AccessPointInfo
 import java.lang.Exception
 import android.content.BroadcastReceiver
 import android.content.IntentFilter
+import pl.sviete.dom.devices.net.AisDeviceController
+import pl.sviete.dom.devices.net.WiFiScanner
 
 
 class MainCreatorActivity : AppCompatActivity(), StartCreatorFragment.OnNextStepListener, AplistCreatorFragment.OnAPSelectedListener
@@ -55,18 +57,20 @@ class MainCreatorActivity : AppCompatActivity(), StartCreatorFragment.OnNextStep
         mAPName = name
         mAPPassword = password
 
-        val filter = IntentFilter()
-        filter.addAction("android.net.wifi.STATE_CHANGE")
-        mReceiver = WiFiReceiver()
-        registerReceiver(mReceiver, filter)
-
+//        val filter = IntentFilter()
+//        filter.addAction("android.net.wifi.STATE_CHANGE")
+//        mReceiver = WiFiReceiver()
+//        registerReceiver(mReceiver, filter)
+        val wifi = WiFiScanner(this)
+        val aisCtrl = AisDeviceController(wifi)
+        aisCtrl.PairNewDevice(mAPInfo!!.ssid, name, password)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        if (mReceiver != null)
-            unregisterReceiver(mReceiver)
-    }
+//    override fun onDestroy() {
+//        super.onDestroy()
+//        if (mReceiver != null)
+//            unregisterReceiver(mReceiver)
+//    }
 
     inner class SectionsPagerAdapter(fm: FragmentManager, ac: Activity) : FragmentPagerAdapter(fm) {
 

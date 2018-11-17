@@ -27,6 +27,7 @@
             android:inputType="textPersonName"
             android:ems="10"
             android:id="@+id/txt_ap_name"
+            android:text="HUAWEI-B315-5DFD"
             app:layout_constraintTop_toBottomOf="@+id/textView4" android:layout_marginStart="8dp"
             app:layout_constraintStart_toStartOf="parent" android:layout_marginEnd="8dp"
             app:layout_constraintEnd_toEndOf="parent" android:layout_marginTop="12dp"/>
@@ -41,6 +42,7 @@
             android:layout_height="wrap_content"
             android:inputType="textPassword"
             android:ems="10"
+            android:text="JMHG14NHQ8T"
             android:id="@+id/txt_ap_password" android:layout_marginTop="12dp"
             app:layout_constraintTop_toBottomOf="@+id/textView5" android:layout_marginStart="8dp"
             app:layout_constraintStart_toStartOf="parent" android:layout_marginEnd="8dp"

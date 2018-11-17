@@ -37,10 +37,7 @@ class AplistCreatorFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        val lm = context!!.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        val wifi = context!!.getSystemService(Context.WIFI_SERVICE) as WifiManager
-
-        mWifi = WiFiScanner(wifi, lm)
+        mWifi = WiFiScanner(context!!)
 
         mAisAdapter = ArrayAdapter(activity, android.R.layout.simple_list_item_1, mAisList)
         ais_ap_list.adapter = mAisAdapter
