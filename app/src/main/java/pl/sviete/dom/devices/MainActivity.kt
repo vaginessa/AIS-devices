@@ -11,10 +11,18 @@ import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import android.content.Intent
+import android.widget.ArrayAdapter
+import android.widget.ListView
+import kotlinx.android.synthetic.main.fragment_creator_aplist_.*
+import pl.sviete.dom.devices.Models.AisDevice
+import pl.sviete.dom.devices.net.Models.AccessPointInfo
 import pl.sviete.dom.devices.ui.AddDeviceCreator.MainCreatorActivity
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+
+    private var mAisAdapter: ArrayAdapter<AisDevice>? = null
+    private val mAisList = ArrayList<AisDevice>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,6 +41,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         toggle.syncState()
 
         nav_view.setNavigationItemSelectedListener(this)
+
+        mAisAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, mAisList)
+        val list = findViewById<ListView>(R.id.ais_device_list)
+        list.adapter = mAisAdapter
     }
 
     override fun onBackPressed() {
@@ -64,7 +76,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         when (item.itemId) {
             R.id.nav_camera -> {
                 val intent = Intent(this, MainCreatorActivity::class.java)
-                startActivity(intent)
+                startActivityForResult(intent, CREATOR_REQUEST_CODE)
             }
             R.id.nav_manage -> {
                 val intent = Intent(this, SettingsActivity::class.java)
@@ -74,5 +86,24 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         drawer_layout.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == CREATOR_REQUEST_CODE){
+            val ais = data?.getSerializableExtra("aisdevice")
+            val name = data?.getStringExtra("name")
+
+            if (ais != null && ais is AisDevice) {
+                if (name != null)
+                    ais.name = name
+                mAisList.add(ais)
+                mAisAdapter!!.notifyDataSetChanged()
+            }
+        }
+    }
+
+    companion object {
+        private const val CREATOR_REQUEST_CODE = 111
     }
 }

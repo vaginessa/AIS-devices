@@ -5,10 +5,8 @@ import android.location.LocationManager
 import android.net.wifi.WifiConfiguration
 import android.net.wifi.WifiManager
 import android.util.Log
-import android.content.Intent
 import android.net.*
-import android.support.v4.content.ContextCompat.getSystemService
-import android.os.Build
+import pl.sviete.dom.devices.net.Models.AccessPointInfo
 
 
 class WiFiScanner (context: Context) {
@@ -106,22 +104,32 @@ class WiFiScanner (context: Context) {
         wiFiManager!!.reconnect()
     }
 
+
+    var netCall: ConnectivityManager.NetworkCallback? = null
+
     fun registerOnConncted(listener: OnWiFiConnectedListener, ssid: String) {
 
         val connectivityManager = mContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager?
         val builder = NetworkRequest.Builder()
         builder.addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
 
+        //netCall =
         connectivityManager!!.registerNetworkCallback(builder.build(), object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
                 var info = connectivityManager.getNetworkInfo(network)
-                if (info.detailedState == NetworkInfo.DetailedState.CONNECTED
+                if (info != null && info.detailedState == NetworkInfo.DetailedState.CONNECTED
                     &&  "\"" + ssid + "\"" == info.extraInfo)
                 {
+                    connectivityManager.unregisterNetworkCallback(this)
                     listener.OnConnected()
                 }
             }
         })
+    }
+
+    fun unregisterOnConnected(){
+        //if (netCall != null)
+        //    connectivityManager.unregisterNetworkCallback(netCall)
     }
 
     private val wiFiManager: WifiManager? = null

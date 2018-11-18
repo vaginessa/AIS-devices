@@ -29,6 +29,7 @@ class ApDataCreatorFragment : Fragment() {
         }
 
         btn_accept.setOnClickListener{
+            btn_accept.isEnabled = false
             mAPDataAcceptListener?.OnAPDataAccept(txt_ap_name.text.toString(), txt_ap_password.text.toString())
         }
     }

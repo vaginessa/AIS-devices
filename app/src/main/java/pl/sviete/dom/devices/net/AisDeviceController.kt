@@ -30,6 +30,10 @@ class AisDeviceController(context: Context): WiFiScanner.OnWiFiConnectedListener
             mListener = context
     }
 
+    fun cancelPair() {
+        mWiFiScanner.unregisterOnConnected()
+    }
+
     fun pairNewDevice(ssid: String, apName: String, apPassword: String){
         mDeviceSsid = ssid
         mAPName = apName

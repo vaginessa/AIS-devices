@@ -1,6 +1,5 @@
 package pl.sviete.dom.devices.ui.AddDeviceCreator
 
-import android.app.Activity
 import android.support.v7.app.AppCompatActivity
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
@@ -9,9 +8,12 @@ import android.os.Bundle
 import android.view.View
 import kotlinx.android.synthetic.main.activity_main_creator.*
 import pl.sviete.dom.devices.R
-import pl.sviete.dom.devices.net.AccessPointInfo
+import pl.sviete.dom.devices.net.Models.AccessPointInfo
 import java.lang.Exception
 import pl.sviete.dom.devices.net.AisDeviceController
+import android.content.Intent
+import pl.sviete.dom.devices.Models.AisDevice
+
 
 class MainCreatorActivity : AppCompatActivity(), StartCreatorFragment.OnNextStepListener, AplistCreatorFragment.OnAPSelectedListener
                             , ApDataCreatorFragment.OnAPDataAcceptListener, NameCreatorFragment.OnNameAcceptListener
@@ -19,6 +21,7 @@ class MainCreatorActivity : AppCompatActivity(), StartCreatorFragment.OnNextStep
 
     private var mSectionsPagerAdapter: SectionsPagerAdapter? = null
     private var mAPInfo: AccessPointInfo? = null
+    private val mIntentResult = Intent()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,6 +47,7 @@ class MainCreatorActivity : AppCompatActivity(), StartCreatorFragment.OnNextStep
     }
 
     override fun OnAPDataCancel() {
+        progressBar.visibility = View.GONE
         mAPInfo = null
         viewPager.currentItem = 1
     }
@@ -56,6 +60,12 @@ class MainCreatorActivity : AppCompatActivity(), StartCreatorFragment.OnNextStep
     }
 
     override fun onAddDeviceFinished(result: Boolean, uuid: String?) {
+
+        if (result) {
+            val ais = AisDevice(uuid!!)
+            mIntentResult.putExtra("aisdevice", ais)
+            setResult(4, mIntentResult)
+        }
         runOnUiThread {
             progressBar.visibility = View.GONE
             if (result)
@@ -64,6 +74,8 @@ class MainCreatorActivity : AppCompatActivity(), StartCreatorFragment.OnNextStep
     }
 
     override fun onNameAccept(name: String) {
+        mIntentResult.putExtra("name", name)
+        setResult(4, mIntentResult)
         finish()
     }
 

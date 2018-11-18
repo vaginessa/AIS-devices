@@ -1,8 +1,6 @@
 package pl.sviete.dom.devices.ui.AddDeviceCreator
 
 import android.content.Context
-import android.location.LocationManager
-import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
@@ -12,7 +10,7 @@ import pl.sviete.dom.devices.R
 import pl.sviete.dom.devices.net.WiFiScanner
 import android.widget.ArrayAdapter
 import kotlinx.android.synthetic.main.fragment_creator_aplist_.*
-import pl.sviete.dom.devices.net.AccessPointInfo
+import pl.sviete.dom.devices.net.Models.AccessPointInfo
 
 class AplistCreatorFragment : Fragment() {
 

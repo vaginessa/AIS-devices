@@ -1,4 +1,4 @@
-package pl.sviete.dom.devices.net
+package pl.sviete.dom.devices.net.Models
 
 class DeviceInfo {
     private var mIP: String? = null
