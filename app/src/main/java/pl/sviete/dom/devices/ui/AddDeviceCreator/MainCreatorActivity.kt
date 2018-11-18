@@ -6,24 +6,19 @@ import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
 import android.os.Bundle
+import android.view.View
 import kotlinx.android.synthetic.main.activity_main_creator.*
 import pl.sviete.dom.devices.R
 import pl.sviete.dom.devices.net.AccessPointInfo
 import java.lang.Exception
-import android.content.BroadcastReceiver
-import android.content.IntentFilter
 import pl.sviete.dom.devices.net.AisDeviceController
-import pl.sviete.dom.devices.net.WiFiScanner
-
 
 class MainCreatorActivity : AppCompatActivity(), StartCreatorFragment.OnNextStepListener, AplistCreatorFragment.OnAPSelectedListener
-                            , ApDataCreatorFragment.OnAPDataAcceptListener{
+                            , ApDataCreatorFragment.OnAPDataAcceptListener, NameCreatorFragment.OnNameAcceptListener
+                            , AisDeviceController.OnAddDeviceFinishedListener{
 
     private var mSectionsPagerAdapter: SectionsPagerAdapter? = null
     private var mAPInfo: AccessPointInfo? = null
-    private var mAPName: String? = null
-    private var mAPPassword: String? = null
-    private var mReceiver: WiFiReceiver? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,7 +28,7 @@ class MainCreatorActivity : AppCompatActivity(), StartCreatorFragment.OnNextStep
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
-        mSectionsPagerAdapter = SectionsPagerAdapter(supportFragmentManager, this)
+        mSectionsPagerAdapter = SectionsPagerAdapter(supportFragmentManager)
 
         // Set up the ViewPager with the sections adapter.
         viewPager.adapter = mSectionsPagerAdapter
@@ -54,38 +49,38 @@ class MainCreatorActivity : AppCompatActivity(), StartCreatorFragment.OnNextStep
     }
 
     override fun OnAPDataAccept(name: String, password: String) {
-        mAPName = name
-        mAPPassword = password
+        progressBar.visibility = View.VISIBLE
 
-//        val filter = IntentFilter()
-//        filter.addAction("android.net.wifi.STATE_CHANGE")
-//        mReceiver = WiFiReceiver()
-//        registerReceiver(mReceiver, filter)
-        val wifi = WiFiScanner(this)
-        val aisCtrl = AisDeviceController(wifi)
-        aisCtrl.PairNewDevice(mAPInfo!!.ssid, name, password)
+        val aisCtrl = AisDeviceController(this)
+        aisCtrl.pairNewDevice(mAPInfo!!.ssid, name, password)
     }
 
-//    override fun onDestroy() {
-//        super.onDestroy()
-//        if (mReceiver != null)
-//            unregisterReceiver(mReceiver)
-//    }
+    override fun onAddDeviceFinished(result: Boolean, uuid: String?) {
+        runOnUiThread {
+            progressBar.visibility = View.GONE
+            if (result)
+                viewPager.currentItem = 3
+        }
+    }
 
-    inner class SectionsPagerAdapter(fm: FragmentManager, ac: Activity) : FragmentPagerAdapter(fm) {
+    override fun onNameAccept(name: String) {
+        finish()
+    }
+
+    inner class SectionsPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
 
         override fun getItem(position: Int): Fragment {
             when (position) {
                 0 -> return StartCreatorFragment.newInstance()
                 1 -> return AplistCreatorFragment.newInstance()
                 2 -> return ApDataCreatorFragment.newInstance()
+                3 -> return NameCreatorFragment.newInstance()
                 else -> throw Exception("Not implemented")
             }
         }
 
         override fun getCount(): Int {
-            // Show 3 total pages.
-            return 3
+            return 4
         }
     }
 }

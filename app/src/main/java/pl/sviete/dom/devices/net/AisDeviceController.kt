@@ -1,24 +1,36 @@
 package pl.sviete.dom.devices.net
 
+import android.content.Context
 import android.util.Log
-import java.io.BufferedReader
-import java.io.InputStreamReader
 import java.io.UnsupportedEncodingException
 import java.net.HttpURLConnection
 import java.net.URL
 import java.net.URLEncoder
+import java.util.*
 
 
-class AisDeviceController(wifiScanner: WiFiScanner): WiFiScanner.OnWiFiConnectedListener {
+class AisDeviceController(context: Context): WiFiScanner.OnWiFiConnectedListener {
     private val TAG = AisDeviceController::class.java.simpleName
-    private val mWiFiScanner = wifiScanner
+
+    companion object {
+        var lastId: Int = 0
+    }
+
+    //private val mContext: Context = context
+    private val mWiFiScanner: WiFiScanner = WiFiScanner(context)
     private var mDeviceSsid: String? = null
     private var mAPName: String? = null
     private var mAPPassword: String? = null
     private var mDeviceNetworkId: Int? = null
     private var mCurrentNetworkId: Int? = null
+    private var mListener: OnAddDeviceFinishedListener? = null
 
-    fun PairNewDevice(ssid: String, apName: String, apPassword: String){
+    init {
+        if (context is OnAddDeviceFinishedListener)
+            mListener = context
+    }
+
+    fun pairNewDevice(ssid: String, apName: String, apPassword: String){
         mDeviceSsid = ssid
         mAPName = apName
         mAPPassword = apPassword
@@ -42,74 +54,47 @@ class AisDeviceController(wifiScanner: WiFiScanner): WiFiScanner.OnWiFiConnected
     }
 
     override fun OnConnected() {
-        // step 1 call iot Using backlog
-        var wsRet = ""
         try {
-            wsRet = cmnd(
-                URLEncoder.encode(
-                    "Backlog FriendlyName1 MyName; SSId1 $mAPName; Password1 $mAPPassword",
-                    "UTF-8"
-                ), ""
-            )
+            val uuid = "device$lastId"
+            val url = URLEncoder.encode("Backlog FriendlyName1 $uuid; SSId1 $mAPName; Password1 $mAPPassword","UTF-8")
+            if (connectAndConfiguraDevice(url)) {
+                lastId += 1
+                mListener?.onAddDeviceFinished(true, uuid)
+            }
         } catch (e: UnsupportedEncodingException) {
-            return //"Nazwa urzÄdzenia, problem z kodowaniem."
+            Log.e(TAG, "OnConnected", e)
         }
-
-        // validation
-        if (wsRet == "ok") {
-            return// "ok"
-        }
-        //Log.d(TAG, "wsRet LOOP:$IotConnectionNumOfTry")
-        return //"Nie udaĹo siÄ przesĹaÄ ustawieĹ do urzÄdzenia, sprĂłbuj ponownie."
+        mListener?.onAddDeviceFinished(false)
     }
 
-    fun cmnd(url: String, attrToCheck: String): String {
-
+    private fun connectAndConfiguraDevice(url: String): Boolean {
         // check if we have correct connection if not then exit
         val networkId = mWiFiScanner.getCurrentNetworkId()
         if (networkId != mDeviceNetworkId) {
             //Log.d(TAG, "wrong connection, info.getNetworkId(): " + info.networkId)
-            return ""
         }
+        else {
+            try {
+                val obj = URL("http://192.168.4.1/cm?cmnd=$url")
 
-        //Log.d(TAG, "wsRet url: $url")
-        try {
-            val obj = URL("http://192.168.4.1/cm?cmnd=$url")
+                val con = obj.openConnection() as HttpURLConnection
+                con.requestMethod = "GET"
+                con.setRequestProperty("User-Agent", "Mozilla/5.0")
 
-            val con = obj.openConnection() as HttpURLConnection
-            con.setRequestMethod("GET")
-            con.setRequestProperty("User-Agent", "Mozilla/5.0")
-
-            /*val inp = BufferedReader(
-                InputStreamReader(con.getInputStream())
-            )
-            var inputLine = ""
-            val response = StringBuffer()
-            while ((inputLine = inp.readLine()) != null) {
-                response.append(inputLine)
+                if (con.responseCode == HttpURLConnection.HTTP_OK) {
+                    mWiFiScanner.removeSsid(mDeviceNetworkId!!)
+                    mWiFiScanner.enableAllNetworks()
+                    mWiFiScanner.connectToNetwork(mCurrentNetworkId!!)
+                    return true
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "ConnectAndConfiguraDevice", e)
             }
-            inp.close()*/
-            return if (con.responseCode == HttpURLConnection.HTTP_OK) {
-                onPostExecute()
-                //                            Log.d(TAG, "response: " + response.toString());
-                //                            JSONObject jResp = new JSONObject(response.toString());
-                //                            Log.d(TAG, attrToCheck + ": " + jResp.getString(attrToCheck));
-                "ok"
-            } else "nok"
-
-
-        } catch (e: Exception) {
-            Log.e(TAG, e.toString())
-            return ""
         }
+        return false
     }
 
-    fun onPostExecute() {
-        //Log.d(TAG, IotNameToSettings + " END !!!")
-        //Log.d(TAG, IotNameToSettings + " result: " + result)
-        //Log.d(TAG, "IotConnectionNumOfTry: $IotConnectionNumOfTry")
-        mWiFiScanner.removeSsid(mDeviceNetworkId!!)
-        mWiFiScanner.enableAllNetworks()
-        mWiFiScanner.connectToNetwork(mCurrentNetworkId!!)
+    interface  OnAddDeviceFinishedListener {
+        fun onAddDeviceFinished(result: Boolean, uuid: String? = null)
     }
 }

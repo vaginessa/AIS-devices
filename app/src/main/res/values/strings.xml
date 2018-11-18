@@ -80,7 +80,8 @@
 
     <string name="pref_title_vibrate">Vibrate</string>
     <string name="title_activity_main_creator">MainCreatorActivity</string>
-    <string name="creator_welcome_text">Włącz do prądu swoje nowe urządzenie AIS. W kolejnych krokach podłączymy je do twojej lokalnej sieci WiFi
+    <string name="creator_welcome_text">Włącz do prądu swoje nowe urządzenie AIS. W kolejnych krokach podłączymy je do
+        twojej lokalnej sieci WiFi
         i AIS Devices.
     </string>
     <string-array name="ais_device_masks">
@@ -90,5 +91,6 @@
     </string-array>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="hello_blank_fragment">Mamy to!
+    Podaj jeszcze tylko nazwę nowego urządzenia</string>
 </resources>
