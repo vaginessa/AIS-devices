@@ -105,16 +105,15 @@ class WiFiScanner (context: Context) {
     }
 
 
-    var netCall: ConnectivityManager.NetworkCallback? = null
+    private var networkCallback: ConnectivityManager.NetworkCallback? = null
 
     fun registerOnConncted(listener: OnWiFiConnectedListener, ssid: String) {
 
-        val connectivityManager = mContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager?
+        val connectivityManager = mContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val builder = NetworkRequest.Builder()
         builder.addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
 
-        //netCall =
-        connectivityManager!!.registerNetworkCallback(builder.build(), object : ConnectivityManager.NetworkCallback() {
+        networkCallback = object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
                 var info = connectivityManager.getNetworkInfo(network)
                 if (info != null && info.detailedState == NetworkInfo.DetailedState.CONNECTED
@@ -124,12 +123,15 @@ class WiFiScanner (context: Context) {
                     listener.OnConnected()
                 }
             }
-        })
+        }
+        connectivityManager!!.registerNetworkCallback(builder.build(), networkCallback)
     }
 
     fun unregisterOnConnected(){
-        //if (netCall != null)
-        //    connectivityManager.unregisterNetworkCallback(netCall)
+        if (networkCallback != null){
+            val connectivityManager = mContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            connectivityManager.unregisterNetworkCallback(networkCallback)
+        }
     }
 
     private val wiFiManager: WifiManager? = null

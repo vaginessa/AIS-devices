@@ -1,12 +1,15 @@
 package pl.sviete.dom.devices.net
 
 import android.content.Context
+import android.os.Handler
 import android.util.Log
 import java.io.UnsupportedEncodingException
 import java.net.HttpURLConnection
 import java.net.URL
 import java.net.URLEncoder
-import java.util.*
+import android.support.v4.os.HandlerCompat.postDelayed
+
+
 
 
 class AisDeviceController(context: Context): WiFiScanner.OnWiFiConnectedListener {
@@ -24,6 +27,7 @@ class AisDeviceController(context: Context): WiFiScanner.OnWiFiConnectedListener
     private var mDeviceNetworkId: Int? = null
     private var mCurrentNetworkId: Int? = null
     private var mListener: OnAddDeviceFinishedListener? = null
+    private var mHandlerTimeout = Handler()
 
     init {
         if (context is OnAddDeviceFinishedListener)
@@ -55,15 +59,29 @@ class AisDeviceController(context: Context): WiFiScanner.OnWiFiConnectedListener
         // create new connection
         mDeviceNetworkId = mWiFiScanner.addNewNetwork(ssid)
         mWiFiScanner.connectToNetwork(mDeviceNetworkId!!)
+        mHandlerTimeout.postDelayed(timeout, 7000)
+    }
+
+    private val timeout = object : Runnable {
+        override fun run() {
+            try {
+                mWiFiScanner.unregisterOnConnected()
+                mListener?.onAddDeviceFinished(false)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 
     override fun OnConnected() {
+        mHandlerTimeout.removeCallbacks(timeout)
         try {
             val uuid = "device$lastId"
             val url = URLEncoder.encode("Backlog FriendlyName1 $uuid; SSId1 $mAPName; Password1 $mAPPassword","UTF-8")
             if (connectAndConfiguraDevice(url)) {
                 lastId += 1
                 mListener?.onAddDeviceFinished(true, uuid)
+                return
             }
         } catch (e: UnsupportedEncodingException) {
             Log.e(TAG, "OnConnected", e)

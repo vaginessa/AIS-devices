@@ -12,6 +12,7 @@ import pl.sviete.dom.devices.net.Models.AccessPointInfo
 import java.lang.Exception
 import pl.sviete.dom.devices.net.AisDeviceController
 import android.content.Intent
+import android.widget.Toast
 import pl.sviete.dom.devices.Models.AisDevice
 
 
@@ -22,6 +23,8 @@ class MainCreatorActivity : AppCompatActivity(), StartCreatorFragment.OnNextStep
     private var mSectionsPagerAdapter: SectionsPagerAdapter? = null
     private var mAPInfo: AccessPointInfo? = null
     private val mIntentResult = Intent()
+    private val mAisCtrl = AisDeviceController(this)
+    private var mAPDataFragment: ApDataCreatorFragment? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +40,12 @@ class MainCreatorActivity : AppCompatActivity(), StartCreatorFragment.OnNextStep
         viewPager.adapter = mSectionsPagerAdapter
     }
 
+    override fun onPause() {
+        super.onPause()
+        mAisCtrl.cancelPair()
+        progressBar.visibility = View.GONE
+    }
+
     override fun onStartDesigner() {
         viewPager.currentItem = 1
     }
@@ -46,25 +55,27 @@ class MainCreatorActivity : AppCompatActivity(), StartCreatorFragment.OnNextStep
         viewPager.currentItem = 2
     }
 
-    override fun OnAPDataCancel() {
-        progressBar.visibility = View.GONE
+    override fun onAPDataCancel() {
+        mAisCtrl.cancelPair()
         mAPInfo = null
+        progressBar.visibility = View.GONE
         viewPager.currentItem = 1
     }
 
-    override fun OnAPDataAccept(name: String, password: String) {
+    override fun onAPDataAccept(name: String, password: String) {
         progressBar.visibility = View.VISIBLE
-
-        val aisCtrl = AisDeviceController(this)
-        aisCtrl.pairNewDevice(mAPInfo!!.ssid, name, password)
+        mAisCtrl.pairNewDevice(mAPInfo!!.ssid, name, password)
     }
 
     override fun onAddDeviceFinished(result: Boolean, uuid: String?) {
-
         if (result) {
             val ais = AisDevice(uuid!!)
             mIntentResult.putExtra("aisdevice", ais)
             setResult(4, mIntentResult)
+        }
+        else{
+            mAPDataFragment!!.activateForm()
+            Toast.makeText(this, "Niestety coś poszło nie tak", Toast.LENGTH_LONG).show()
         }
         runOnUiThread {
             progressBar.visibility = View.GONE
@@ -79,13 +90,20 @@ class MainCreatorActivity : AppCompatActivity(), StartCreatorFragment.OnNextStep
         finish()
     }
 
+    companion object {
+        const val CREATOR_REQUEST_CODE = 111
+    }
+
     inner class SectionsPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
 
         override fun getItem(position: Int): Fragment {
             when (position) {
                 0 -> return StartCreatorFragment.newInstance()
                 1 -> return AplistCreatorFragment.newInstance()
-                2 -> return ApDataCreatorFragment.newInstance()
+                2 -> {
+                    mAPDataFragment = ApDataCreatorFragment.newInstance()
+                    return mAPDataFragment!!
+                 }
                 3 -> return NameCreatorFragment.newInstance()
                 else -> throw Exception("Not implemented")
             }

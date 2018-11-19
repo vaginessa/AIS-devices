@@ -1,7 +1,6 @@
 package pl.sviete.dom.devices.ui.AddDeviceCreator
 
 import android.content.Context
-import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
@@ -25,12 +24,12 @@ class ApDataCreatorFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         btn_cancel.setOnClickListener{
-            mAPDataAcceptListener?.OnAPDataCancel()
+            mAPDataAcceptListener?.onAPDataCancel()
         }
 
         btn_accept.setOnClickListener{
             btn_accept.isEnabled = false
-            mAPDataAcceptListener?.OnAPDataAccept(txt_ap_name.text.toString(), txt_ap_password.text.toString())
+            mAPDataAcceptListener?.onAPDataAccept(txt_ap_name.text.toString(), txt_ap_password.text.toString())
         }
     }
 
@@ -41,15 +40,18 @@ class ApDataCreatorFragment : Fragment() {
         }
     }
 
+    fun activateForm() {
+        btn_accept.isEnabled = true
+    }
+
     companion object {
 
         @JvmStatic
-        fun newInstance() =
-            ApDataCreatorFragment()
+        fun newInstance() = ApDataCreatorFragment()
     }
 
     interface OnAPDataAcceptListener{
-        fun OnAPDataCancel()
-        fun OnAPDataAccept(name: String, password: String)
+        fun onAPDataCancel()
+        fun onAPDataAccept(name: String, password: String)
     }
 }

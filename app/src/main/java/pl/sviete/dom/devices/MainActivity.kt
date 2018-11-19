@@ -76,7 +76,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         when (item.itemId) {
             R.id.nav_camera -> {
                 val intent = Intent(this, MainCreatorActivity::class.java)
-                startActivityForResult(intent, CREATOR_REQUEST_CODE)
+                startActivityForResult(intent, MainCreatorActivity.CREATOR_REQUEST_CODE)
             }
             R.id.nav_manage -> {
                 val intent = Intent(this, SettingsActivity::class.java)
@@ -90,7 +90,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == CREATOR_REQUEST_CODE){
+        if (requestCode == MainCreatorActivity.CREATOR_REQUEST_CODE){
             val ais = data?.getSerializableExtra("aisdevice")
             val name = data?.getStringExtra("name")
 
@@ -101,9 +101,5 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 mAisAdapter!!.notifyDataSetChanged()
             }
         }
-    }
-
-    companion object {
-        private const val CREATOR_REQUEST_CODE = 111
     }
 }
