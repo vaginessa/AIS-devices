@@ -26,7 +26,7 @@ class WiFiScanner (context: Context) {
             } else {
                 val result = mutableListOf<AccessPointInfo>()
                 for (scan in scans) {
-                    val ap = AccessPointInfo(scan.SSID)
+                    val ap = AccessPointInfo(scan.SSID, false)
                     result.add(ap)
                 }
                 return result

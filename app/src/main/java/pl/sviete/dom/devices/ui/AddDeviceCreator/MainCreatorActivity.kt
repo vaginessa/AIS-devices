@@ -71,7 +71,7 @@ class MainCreatorActivity : AppCompatActivity(), StartCreatorFragment.OnNextStep
         if (result) {
             val ais = AisDevice(uuid!!)
             mIntentResult.putExtra("aisdevice", ais)
-            setResult(4, mIntentResult)
+            setResult(CREATOR_REQUEST_CODE, mIntentResult)
         }
         else{
             mAPDataFragment!!.activateForm()
@@ -86,7 +86,7 @@ class MainCreatorActivity : AppCompatActivity(), StartCreatorFragment.OnNextStep
 
     override fun onNameAccept(name: String) {
         mIntentResult.putExtra("name", name)
-        setResult(4, mIntentResult)
+        setResult(CREATOR_REQUEST_CODE, mIntentResult)
         finish()
     }
 

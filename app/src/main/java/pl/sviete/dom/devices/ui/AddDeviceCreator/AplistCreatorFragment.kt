@@ -2,7 +2,9 @@ package pl.sviete.dom.devices.ui.AddDeviceCreator
 
 import android.content.Context
 import android.os.Bundle
+import android.support.constraint.ConstraintLayout
 import android.support.v4.app.Fragment
+import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,15 +13,16 @@ import pl.sviete.dom.devices.net.WiFiScanner
 import android.widget.ArrayAdapter
 import kotlinx.android.synthetic.main.fragment_creator_aplist_.*
 import pl.sviete.dom.devices.net.Models.AccessPointInfo
+import android.widget.Toast
+import java.util.*
+
 
 class AplistCreatorFragment : Fragment() {
 
     private var mApSelectedListener: OnAPSelectedListener? = null
     private var mWifi: WiFiScanner? = null
-    private var mAisAdapter: ArrayAdapter<AccessPointInfo>? = null
+    private var mAisAdapter: APAdapter? = null
     private val mAisList = ArrayList<AccessPointInfo>()
-    private var mOthersAdapter: ArrayAdapter<AccessPointInfo>? = null
-    private val mOthersList = ArrayList<AccessPointInfo>()
 
     companion object {
         fun newInstance() = AplistCreatorFragment()
@@ -37,25 +40,17 @@ class AplistCreatorFragment : Fragment() {
 
         mWifi = WiFiScanner(context!!)
 
-        mAisAdapter = ArrayAdapter(activity, android.R.layout.simple_list_item_1, mAisList)
-        ais_ap_list.adapter = mAisAdapter
-
-        mOthersAdapter = ArrayAdapter(activity, android.R.layout.simple_list_item_1, mOthersList)
-        others_ap_list.adapter = mOthersAdapter
+        rv_ap_list.layoutManager = LinearLayoutManager(context)
+        mAisAdapter = APAdapter(mAisList, context!!, object : APAdapter.OnItemClickListener {
+            override fun onItemClick(item: AccessPointInfo) {
+                mApSelectedListener?.OnAPSelected(item)
+            }
+        })
+        rv_ap_list.adapter = mAisAdapter
 
         swiperefresh.setOnRefreshListener {
             loadData()
             swiperefresh.isRefreshing = false
-        }
-
-        ais_ap_list.setOnItemClickListener { parent, view, position, id ->
-            val apInfo = parent.getItemAtPosition(position) as AccessPointInfo
-            mApSelectedListener?.OnAPSelected(apInfo)
-        }
-
-        others_ap_list.setOnItemClickListener { parent, view, position, id ->
-            val apInfo = parent.getItemAtPosition(position) as AccessPointInfo
-            mApSelectedListener?.OnAPSelected(apInfo)
         }
     }
 
@@ -74,16 +69,21 @@ class AplistCreatorFragment : Fragment() {
 
     private fun loadData(){
         mAisList.clear()
-        mOthersList.clear()
-        mWifi!!.GetAccesibleAccessPoints()?.forEach {
+
+        val list = mWifi!!.GetAccesibleAccessPoints()
+        if (list != null){
+
             val masks = resources.getStringArray(R.array.ais_device_masks)
-            if ((masks.filter { m -> it.ssid.contains(m, true)}).any())
+            list.forEach {
+                if ((masks.filter { m -> it.ssid.contains(m, true)}).any()) {
+                    it.isAis = true
+                }
                 mAisList.add(it)
-            else
-                mOthersList.add(it)
+            }
+            Collections.sort(mAisList)
         }
+
         mAisAdapter!!.notifyDataSetChanged()
-        mOthersAdapter!!.notifyDataSetChanged()
     }
 
     interface OnAPSelectedListener{
