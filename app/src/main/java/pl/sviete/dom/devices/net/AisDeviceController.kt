@@ -59,7 +59,7 @@ class AisDeviceController(context: Context): WiFiScanner.OnWiFiConnectedListener
         // create new connection
         mDeviceNetworkId = mWiFiScanner.addNewNetwork(ssid)
         mWiFiScanner.connectToNetwork(mDeviceNetworkId!!)
-        mHandlerTimeout.postDelayed(timeout, 7000)
+        mHandlerTimeout.postDelayed(timeout, 5000)
     }
 
     private val timeout = object : Runnable {

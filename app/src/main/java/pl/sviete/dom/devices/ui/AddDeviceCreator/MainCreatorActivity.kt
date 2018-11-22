@@ -2,8 +2,6 @@ package pl.sviete.dom.devices.ui.AddDeviceCreator
 
 import android.support.v7.app.AppCompatActivity
 import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentManager
-import android.support.v4.app.FragmentPagerAdapter
 import android.os.Bundle
 import android.view.View
 import kotlinx.android.synthetic.main.activity_main_creator.*
@@ -20,11 +18,10 @@ class MainCreatorActivity : AppCompatActivity(), StartCreatorFragment.OnNextStep
                             , ApDataCreatorFragment.OnAPDataAcceptListener, NameCreatorFragment.OnNameAcceptListener
                             , AisDeviceController.OnAddDeviceFinishedListener{
 
-    private var mSectionsPagerAdapter: SectionsPagerAdapter? = null
     private var mAPInfo: AccessPointInfo? = null
     private val mIntentResult = Intent()
     private val mAisCtrl = AisDeviceController(this)
-    private var mAPDataFragment: ApDataCreatorFragment? = null
+    private var mCurrentFragment: Fragment? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,12 +29,19 @@ class MainCreatorActivity : AppCompatActivity(), StartCreatorFragment.OnNextStep
 
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        // Create the adapter that will return a fragment for each of the three
-        // primary sections of the activity.
-        mSectionsPagerAdapter = SectionsPagerAdapter(supportFragmentManager)
 
-        // Set up the ViewPager with the sections adapter.
-        viewPager.adapter = mSectionsPagerAdapter
+        // However, if we're being restored from a previous state,
+        // then we don't need to do anything and should return or else
+        // we could end up with overlapping fragments.
+        if (savedInstanceState != null) {
+            return
+        }
+
+        // Create a new Fragment to be placed in the activity layout
+        val firstFragment = getFragment(0)
+        // Add the fragment to the 'fragment_container' FrameLayout
+        supportFragmentManager.beginTransaction()
+            .add(R.id.fragment_container, firstFragment).commit()
     }
 
     override fun onPause() {
@@ -47,19 +51,19 @@ class MainCreatorActivity : AppCompatActivity(), StartCreatorFragment.OnNextStep
     }
 
     override fun onStartDesigner() {
-        viewPager.currentItem = 1
+        changeFragment(1)
     }
 
     override fun OnAPSelected(apInfo : AccessPointInfo){
         mAPInfo = apInfo
-        viewPager.currentItem = 2
+        changeFragment(2, true)
     }
 
     override fun onAPDataCancel() {
         mAisCtrl.cancelPair()
         mAPInfo = null
         progressBar.visibility = View.GONE
-        viewPager.currentItem = 1
+        supportFragmentManager.popBackStack()
     }
 
     override fun onAPDataAccept(name: String, password: String) {
@@ -74,13 +78,15 @@ class MainCreatorActivity : AppCompatActivity(), StartCreatorFragment.OnNextStep
             setResult(CREATOR_REQUEST_CODE, mIntentResult)
         }
         else{
-            mAPDataFragment!!.activateForm()
+            val apFragment = mCurrentFragment as ApDataCreatorFragment
+            if (apFragment != null)
+                apFragment.activateForm()
             Toast.makeText(this, "Niestety coś poszło nie tak", Toast.LENGTH_LONG).show()
         }
         runOnUiThread {
             progressBar.visibility = View.GONE
             if (result)
-                viewPager.currentItem = 3
+                changeFragment(3)
         }
     }
 
@@ -94,23 +100,25 @@ class MainCreatorActivity : AppCompatActivity(), StartCreatorFragment.OnNextStep
         const val CREATOR_REQUEST_CODE = 111
     }
 
-    inner class SectionsPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
+    fun changeFragment(position: Int, canBack: Boolean = false) {
+        val newFragment = getFragment(position)
+        val transaction = supportFragmentManager.beginTransaction()
 
-        override fun getItem(position: Int): Fragment {
-            when (position) {
-                0 -> return StartCreatorFragment.newInstance()
-                1 -> return AplistCreatorFragment.newInstance()
-                2 -> {
-                    mAPDataFragment = ApDataCreatorFragment.newInstance()
-                    return mAPDataFragment!!
-                 }
-                3 -> return NameCreatorFragment.newInstance()
-                else -> throw Exception("Not implemented")
-            }
-        }
+        transaction.setCustomAnimations(R.anim.slide_out_right, R.anim.exit_to_left, R.anim.slide_in_left, R.anim.exit_to_right)
+        transaction.replace(R.id.fragment_container, newFragment)
+        if (canBack)
+            transaction.addToBackStack(null)
+        transaction.commit()
+        mCurrentFragment = newFragment
+    }
 
-        override fun getCount(): Int {
-            return 4
+     fun getFragment(position: Int): Fragment {
+        when (position) {
+            0 -> return StartCreatorFragment.newInstance()
+            1 -> return AplistCreatorFragment.newInstance()
+            2 -> return ApDataCreatorFragment.newInstance()
+            3 -> return NameCreatorFragment.newInstance()
+            else -> throw Exception("Not implemented")
         }
     }
 }

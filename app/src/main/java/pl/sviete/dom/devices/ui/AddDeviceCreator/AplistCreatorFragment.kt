@@ -54,17 +54,15 @@ class AplistCreatorFragment : Fragment() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        loadData()
+    }
+
     override fun onAttach(context: Context?) {
         super.onAttach(context)
         if (context is OnAPSelectedListener)
             mApSelectedListener = context
-    }
-
-    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
-        super.setUserVisibleHint(isVisibleToUser)
-        if (isVisibleToUser){
-            loadData()
-        }
     }
 
     private fun loadData(){
