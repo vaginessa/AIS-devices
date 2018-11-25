@@ -78,10 +78,9 @@ class MainCreatorActivity : AppCompatActivity(), StartCreatorFragment.OnNextStep
             setResult(CREATOR_REQUEST_CODE, mIntentResult)
         }
         else{
-            val apFragment = mCurrentFragment as ApDataCreatorFragment
-            if (apFragment != null)
-                apFragment.activateForm()
-            Toast.makeText(this, "Niestety coś poszło nie tak", Toast.LENGTH_LONG).show()
+            val apFragment = mCurrentFragment as ApDataCreatorFragment?
+            apFragment?.activateForm()
+            Toast.makeText(this, R.string.unknown_error, Toast.LENGTH_LONG).show()
         }
         runOnUiThread {
             progressBar.visibility = View.GONE

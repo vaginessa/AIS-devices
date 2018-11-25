@@ -17,7 +17,7 @@ class DeviceInfo {
         return "$mName, IP: $mIP"
     }
 
-    override fun equals(obj: Any?): Boolean {
-        return if (obj is DeviceInfo) obj.mName == this.mName else false
+    override fun equals(other: Any?): Boolean {
+        return if (other is DeviceInfo) other.mName == this.mName else false
     }
 }

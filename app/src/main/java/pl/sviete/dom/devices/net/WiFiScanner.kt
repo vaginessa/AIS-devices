@@ -124,7 +124,7 @@ class WiFiScanner (context: Context) {
                 }
             }
         }
-        connectivityManager!!.registerNetworkCallback(builder.build(), networkCallback)
+        connectivityManager.registerNetworkCallback(builder.build(), networkCallback)
     }
 
     fun unregisterOnConnected(){

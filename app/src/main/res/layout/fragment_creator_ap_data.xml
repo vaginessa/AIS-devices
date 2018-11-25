@@ -30,11 +30,12 @@
             app:layout_constraintStart_toStartOf="parent" android:layout_marginEnd="8dp"
             app:layout_constraintEnd_toEndOf="parent" android:layout_marginTop="12dp"/>
     <Button
-            android:text="Połącz"
+            android:text="@string/connect"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/btn_accept" app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp" app:layout_constraintBottom_toBottomOf="parent"/>
+            android:layout_marginBottom="8dp" app:layout_constraintBottom_toBottomOf="parent"
+            style="@style/Widget.AppCompat.Button.Colored"/>
     <EditText
             android:layout_width="356dp"
             android:layout_height="wrap_content"
@@ -46,7 +47,7 @@
             app:layout_constraintStart_toStartOf="parent" android:layout_marginEnd="8dp"
             app:layout_constraintEnd_toEndOf="parent" app:layout_constraintHorizontal_bias="0.333"/>
     <Button
-            android:text="Cofnij"
+            android:text="@string/back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/btn_cancel" android:layout_marginBottom="8dp"
