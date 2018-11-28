@@ -1,7 +1,7 @@
 package pl.sviete.dom.devices
 
+import android.Manifest
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
@@ -11,16 +11,20 @@ import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
+import android.view.View
 import android.widget.ArrayAdapter
+import android.widget.Button
 import android.widget.ListView
-import kotlinx.android.synthetic.main.fragment_creator_aplist_.*
+import kotlinx.android.synthetic.main.content_main.*
 import pl.sviete.dom.devices.Models.AisDevice
-import pl.sviete.dom.devices.net.Models.AccessPointInfo
 import pl.sviete.dom.devices.ui.AddDeviceCreator.MainCreatorActivity
-
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
+    private val PERMISSIONS_REQUEST_LOCATION: Int = 111
     private var mAisAdapter: ArrayAdapter<AisDevice>? = null
     private val mAisList = ArrayList<AisDevice>()
 
@@ -28,11 +32,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
-
-        fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
-        }
 
         val toggle = ActionBarDrawerToggle(
             this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close
@@ -45,6 +44,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         mAisAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, mAisList)
         val list = findViewById<ListView>(R.id.ais_device_list)
         list.adapter = mAisAdapter
+
+        findViewById<Button>(R.id.btn_welcome_add).setOnClickListener{
+            showCreator()
+        }
+
+        checkPermissions()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        showAddWelcomeButton()
     }
 
     override fun onBackPressed() {
@@ -74,11 +84,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
         when (item.itemId) {
-            R.id.nav_camera -> {
-                val intent = Intent(this, MainCreatorActivity::class.java)
-                startActivityForResult(intent, MainCreatorActivity.CREATOR_REQUEST_CODE)
+            R.id.nav_add_creator -> {
+                showCreator()
             }
-            R.id.nav_manage -> {
+            R.id.nav_settings -> {
                 val intent = Intent(this, SettingsActivity::class.java)
                 startActivity(intent)
             }
@@ -99,6 +108,47 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     ais.name = name
                 mAisList.add(ais)
                 mAisAdapter!!.notifyDataSetChanged()
+            }
+        }
+    }
+
+    private fun showCreator() {
+        val intent = Intent(this, MainCreatorActivity::class.java)
+        startActivityForResult(intent, MainCreatorActivity.CREATOR_REQUEST_CODE)
+    }
+
+    private fun showAddWelcomeButton() {
+        if (mAisList.count() == 0)
+        {
+            welcome_text.visibility = View.VISIBLE
+            ais_device_list.visibility = View.GONE
+        }
+        else
+        {
+            welcome_text.visibility = View.GONE
+            ais_device_list.visibility = View.VISIBLE
+        }
+    }
+
+    private fun checkPermissions() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION),
+                PERMISSIONS_REQUEST_LOCATION)
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int,
+                                            permissions: Array<String>, grantResults: IntArray) {
+        when (requestCode) {
+            PERMISSIONS_REQUEST_LOCATION -> {
+                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                    // permission was granted
+                } else {
+                    finish()
+                }
+                return
             }
         }
     }
