@@ -77,9 +77,9 @@
         i AIS Devices.
     </string>
     <string-array name="ais_device_masks">
-        <item>dom</item>
-        <item>B315</item>
-        <item>test</item>
+        <item>dom_</item>
+        <item>sonoff_</item>
+        <item>itead_</item>
     </string-array>
 
     <string name="hello_blank_fragment">Mamy to!

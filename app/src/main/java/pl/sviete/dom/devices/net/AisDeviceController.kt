@@ -73,7 +73,7 @@ class AisDeviceController(context: Context): WiFiScanner.OnWiFiConnectedListener
         }
     }
 
-    override fun OnConnected() {
+    override fun onConnected() {
         mHandlerTimeout.removeCallbacks(timeout)
         try {
             val uuid = "device$lastId"
@@ -84,7 +84,7 @@ class AisDeviceController(context: Context): WiFiScanner.OnWiFiConnectedListener
                 return
             }
         } catch (e: UnsupportedEncodingException) {
-            Log.e(TAG, "OnConnected", e)
+            Log.e(TAG, "onConnected", e)
         }
         mListener?.onAddDeviceFinished(false)
     }

@@ -2,7 +2,6 @@ package pl.sviete.dom.devices.ui.AddDeviceCreator
 
 import android.content.Context
 import android.os.Bundle
-import android.support.constraint.ConstraintLayout
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
@@ -10,14 +9,12 @@ import android.view.View
 import android.view.ViewGroup
 import pl.sviete.dom.devices.R
 import pl.sviete.dom.devices.net.WiFiScanner
-import android.widget.ArrayAdapter
 import kotlinx.android.synthetic.main.fragment_creator_aplist_.*
 import pl.sviete.dom.devices.net.Models.AccessPointInfo
-import android.widget.Toast
 import java.util.*
 
 
-class AplistCreatorFragment : Fragment() {
+class AplistCreatorFragment : Fragment(), WiFiScanner.OnScanResultsListener {
 
     private var mApSelectedListener: OnAPSelectedListener? = null
     private var mWifi: WiFiScanner? = null
@@ -43,20 +40,26 @@ class AplistCreatorFragment : Fragment() {
         rv_ap_list.layoutManager = LinearLayoutManager(context)
         mAisAdapter = APAdapter(mAisList, context!!, object : APAdapter.OnItemClickListener {
             override fun onItemClick(item: AccessPointInfo) {
-                mApSelectedListener?.OnAPSelected(item)
+                mWifi?.stopScan()
+                mApSelectedListener?.onAPSelected(item)
             }
         })
         rv_ap_list.adapter = mAisAdapter
 
         swiperefresh.setOnRefreshListener {
-            loadData()
+            mWifi!!.startScan(this)
             swiperefresh.isRefreshing = false
         }
     }
 
     override fun onStart() {
         super.onStart()
-        loadData()
+        mWifi!!.startScan(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        mWifi!!.stopScan()
     }
 
     override fun onAttach(context: Context?) {
@@ -65,26 +68,24 @@ class AplistCreatorFragment : Fragment() {
             mApSelectedListener = context
     }
 
-    private fun loadData(){
+    override fun onScanResults(scanResult: List<AccessPointInfo>) {
+        setData(scanResult)
+    }
+
+    private fun setData(list: List<AccessPointInfo>){
+        val masks = resources.getStringArray(R.array.ais_device_masks)
         mAisList.clear()
-
-        val list = mWifi!!.GetAccesibleAccessPoints()
-        if (list != null){
-
-            val masks = resources.getStringArray(R.array.ais_device_masks)
-            list.forEach {
-                if ((masks.filter { m -> it.ssid.contains(m, true)}).any()) {
-                    it.isAis = true
-                }
-                mAisList.add(it)
+        list.forEach {
+            if ((masks.filter { m -> it.ssid.contains(m, true)}).any()) {
+                it.isAis = true
             }
-            Collections.sort(mAisList)
+            mAisList.add(it)
         }
-
+        mAisList.sort()
         mAisAdapter!!.notifyDataSetChanged()
     }
 
     interface OnAPSelectedListener{
-        fun OnAPSelected(apInfo: AccessPointInfo)
+        fun onAPSelected(apInfo: AccessPointInfo)
     }
 }

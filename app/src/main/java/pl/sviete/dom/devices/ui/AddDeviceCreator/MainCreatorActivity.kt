@@ -54,7 +54,7 @@ class MainCreatorActivity : AppCompatActivity(), StartCreatorFragment.OnNextStep
         changeFragment(1)
     }
 
-    override fun OnAPSelected(apInfo : AccessPointInfo){
+    override fun onAPSelected(apInfo : AccessPointInfo){
         mAPInfo = apInfo
         changeFragment(2, true)
     }

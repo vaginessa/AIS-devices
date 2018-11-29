@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import pl.sviete.dom.devices.R
 import kotlinx.android.synthetic.main.item_ap_list.view.*
 import pl.sviete.dom.devices.net.Models.AccessPointInfo
-import android.support.v4.app.Fragment
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.StyleSpan
@@ -35,17 +34,19 @@ class APAdapter (val items : ArrayList<AccessPointInfo>, val context: Context, v
 
 class ViewHolder (val view: View) : RecyclerView.ViewHolder(view) {
     val apName = view.txt_ap_name
-    val masks = view.resources.getStringArray(R.array.ais_device_masks)
+    val aisLogo = view.img_ap_aislogo
 
     fun bind(item: AccessPointInfo , listener: APAdapter.OnItemClickListener) {
-
-        if ((masks.filter { m -> item.ssid.contains(m, true)}).any()) {
+        if (item.isAis) {
             apName.text = SpannableStringBuilder(item.ssid).apply{
                 setSpan(StyleSpan(Typeface.BOLD), 0, item.ssid.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
             }
+            aisLogo.visibility = View.VISIBLE
         }
-        else
+        else {
             apName.text = item.ssid
+            aisLogo.visibility = View.GONE
+        }
         itemView.setOnClickListener{
             listener.onItemClick(item)
         }
