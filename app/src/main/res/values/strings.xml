@@ -82,12 +82,13 @@
         <item>itead_</item>
     </string-array>
 
-    <string name="hello_blank_fragment">Mamy to!
-    Podaj jeszcze tylko nazwę nowego urządzenia</string>
+    <string name="text_name_fragment">Podaj przyjazną nazwę dla wybranego urządzenia (%1$s)</string>
     <string name="new_device">Nowe urządzenie</string>
     <string name="connect">Połącz</string>
     <string name="back">Cofnij</string>
     <string name="finish">Zakończ</string>
     <string name="unknown_error">Niestety coś poszło nie tak</string>
     <string name="welcome_add_new_device">Dodaj swoje pierwsze urządzenie</string>
+    <string name="next">Dalej</string>
+    <string name="name">Nazwa</string>
 </resources>

@@ -18,10 +18,12 @@ class MainCreatorActivity : AppCompatActivity(), StartCreatorFragment.OnNextStep
                             , ApDataCreatorFragment.OnAPDataAcceptListener, NameCreatorFragment.OnNameAcceptListener
                             , AisDeviceController.OnAddDeviceFinishedListener{
 
+
     private var mAPInfo: AccessPointInfo? = null
     private val mIntentResult = Intent()
     private val mAisCtrl = AisDeviceController(this)
     private var mCurrentFragment: Fragment? = null
+    private var mNewDeviceName: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,11 +39,10 @@ class MainCreatorActivity : AppCompatActivity(), StartCreatorFragment.OnNextStep
             return
         }
 
-        // Create a new Fragment to be placed in the activity layout
         val firstFragment = getFragment(0)
-        // Add the fragment to the 'fragment_container' FrameLayout
         supportFragmentManager.beginTransaction()
-            .add(R.id.fragment_container, firstFragment).commit()
+            .add(R.id.fragment_container, firstFragment)
+            .commit()
     }
 
     override fun onPause() {
@@ -59,47 +60,53 @@ class MainCreatorActivity : AppCompatActivity(), StartCreatorFragment.OnNextStep
         changeFragment(2, true)
     }
 
+    override fun onNameCancel(name: String) {
+        mNewDeviceName = name
+        supportFragmentManager.popBackStack()
+    }
+
+    override fun onNameAccept(name: String) {
+        mNewDeviceName = name
+        changeFragment(3, true)
+    }
+
     override fun onAPDataCancel() {
         mAisCtrl.cancelPair()
-        mAPInfo = null
         progressBar.visibility = View.GONE
         supportFragmentManager.popBackStack()
     }
 
     override fun onAPDataAccept(name: String, password: String) {
         progressBar.visibility = View.VISIBLE
-        mAisCtrl.pairNewDevice(mAPInfo!!.ssid, name, password)
+        mAisCtrl.pairNewDevice(mAPInfo!!.ssid, name, password, mNewDeviceName!!)
     }
 
-    override fun onAddDeviceFinished(result: Boolean, uuid: String?) {
+    override fun onAddDeviceFinished(result: Boolean) {
         if (result) {
-            val ais = AisDevice(uuid!!)
+            val ais = AisDevice(mAPInfo!!.mac)
             mIntentResult.putExtra("aisdevice", ais)
+            mIntentResult.putExtra("name", mNewDeviceName)
             setResult(CREATOR_REQUEST_CODE, mIntentResult)
         }
         else{
-            val apFragment = mCurrentFragment as ApDataCreatorFragment?
-            apFragment?.activateForm()
-            Toast.makeText(this, R.string.unknown_error, Toast.LENGTH_LONG).show()
+            runOnUiThread {
+                val apFragment = mCurrentFragment as ApDataCreatorFragment?
+                apFragment?.activateForm()
+                Toast.makeText(this, R.string.unknown_error, Toast.LENGTH_LONG).show()
+            }
         }
         runOnUiThread {
             progressBar.visibility = View.GONE
             if (result)
-                changeFragment(3)
+                finish()
         }
-    }
-
-    override fun onNameAccept(name: String) {
-        mIntentResult.putExtra("name", name)
-        setResult(CREATOR_REQUEST_CODE, mIntentResult)
-        finish()
     }
 
     companion object {
         const val CREATOR_REQUEST_CODE = 111
     }
 
-    fun changeFragment(position: Int, canBack: Boolean = false) {
+    private fun changeFragment(position: Int, canBack: Boolean = false) {
         val newFragment = getFragment(position)
         val transaction = supportFragmentManager.beginTransaction()
 
@@ -111,13 +118,20 @@ class MainCreatorActivity : AppCompatActivity(), StartCreatorFragment.OnNextStep
         mCurrentFragment = newFragment
     }
 
-     fun getFragment(position: Int): Fragment {
+    private fun getFragment(position: Int): Fragment {
         when (position) {
             0 -> return StartCreatorFragment.newInstance()
             1 -> return AplistCreatorFragment.newInstance()
-            2 -> return ApDataCreatorFragment.newInstance()
-            3 -> return NameCreatorFragment.newInstance()
-            else -> throw Exception("Not implemented")
+            2 -> {
+                val bundle = Bundle()
+                bundle.putString("APname", mAPInfo?.ssid)
+                bundle.putString("defDeviceName", mNewDeviceName)
+                val nameFragment = NameCreatorFragment.newInstance()
+                nameFragment.arguments = bundle
+                return nameFragment
+            }
+            3 -> return ApDataCreatorFragment.newInstance()
         }
+        throw Exception("Not implemented")
     }
 }

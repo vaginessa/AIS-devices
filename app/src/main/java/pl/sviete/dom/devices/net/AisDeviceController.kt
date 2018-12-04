@@ -21,6 +21,7 @@ class AisDeviceController(context: Context): WiFiScanner.OnWiFiConnectedListener
 
     //private val mContext: Context = context
     private val mWiFiScanner: WiFiScanner = WiFiScanner(context)
+    private var mFriendlyName: String? = null
     private var mDeviceSsid: String? = null
     private var mAPName: String? = null
     private var mAPPassword: String? = null
@@ -28,6 +29,7 @@ class AisDeviceController(context: Context): WiFiScanner.OnWiFiConnectedListener
     private var mCurrentNetworkId: Int? = null
     private var mListener: OnAddDeviceFinishedListener? = null
     private var mHandlerTimeout = Handler()
+    private var mConnectingCanceled: Boolean = true
 
     init {
         if (context is OnAddDeviceFinishedListener)
@@ -38,10 +40,11 @@ class AisDeviceController(context: Context): WiFiScanner.OnWiFiConnectedListener
         mWiFiScanner.unregisterOnConnected()
     }
 
-    fun pairNewDevice(ssid: String, apName: String, apPassword: String){
+    fun pairNewDevice(ssid: String, apName: String, apPassword: String, friendlyName: String){
         mDeviceSsid = ssid
         mAPName = apName
         mAPPassword = apPassword
+        mFriendlyName = friendlyName
 
         // save the current connection - to reconnect after the device will be added
         mCurrentNetworkId = mWiFiScanner.getCurrentNetworkId()
@@ -59,14 +62,17 @@ class AisDeviceController(context: Context): WiFiScanner.OnWiFiConnectedListener
         // create new connection
         mDeviceNetworkId = mWiFiScanner.addNewNetwork(ssid)
         mWiFiScanner.connectToNetwork(mDeviceNetworkId!!)
+        mConnectingCanceled = false
         mHandlerTimeout.postDelayed(timeout, 5000)
     }
 
     private val timeout = object : Runnable {
         override fun run() {
             try {
-                mWiFiScanner.unregisterOnConnected()
-                mListener?.onAddDeviceFinished(false)
+                if (!mConnectingCanceled) {
+                    mWiFiScanner.unregisterOnConnected()
+                    mListener?.onAddDeviceFinished(false)
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -74,13 +80,13 @@ class AisDeviceController(context: Context): WiFiScanner.OnWiFiConnectedListener
     }
 
     override fun onConnected() {
+        mConnectingCanceled = true
         mHandlerTimeout.removeCallbacks(timeout)
         try {
-            val uuid = "device$lastId"
-            val url = URLEncoder.encode("Backlog FriendlyName1 $uuid; SSId1 $mAPName; Password1 $mAPPassword","UTF-8")
+            val url = URLEncoder.encode("Backlog FriendlyName1 $mFriendlyName; SSId1 $mAPName; Password1 $mAPPassword","UTF-8")
             if (connectAndConfiguraDevice(url)) {
                 lastId += 1
-                mListener?.onAddDeviceFinished(true, uuid)
+                mListener?.onAddDeviceFinished(true)
                 return
             }
         } catch (e: UnsupportedEncodingException) {
@@ -117,6 +123,6 @@ class AisDeviceController(context: Context): WiFiScanner.OnWiFiConnectedListener
     }
 
     interface  OnAddDeviceFinishedListener {
-        fun onAddDeviceFinished(result: Boolean, uuid: String? = null)
+        fun onAddDeviceFinished(result: Boolean)
     }
 }

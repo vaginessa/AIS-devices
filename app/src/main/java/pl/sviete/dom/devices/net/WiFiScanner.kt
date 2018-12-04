@@ -135,7 +135,6 @@ class WiFiScanner (context: Context) {
         wiFiManager.reconnect()
     }
 
-
     private var networkCallback: ConnectivityManager.NetworkCallback? = null
 
     fun registerOnConncted(listener: OnWiFiConnectedListener, ssid: String) {
@@ -150,6 +149,7 @@ class WiFiScanner (context: Context) {
                 if (info != null && info.detailedState == NetworkInfo.DetailedState.CONNECTED
                     &&  "\"" + ssid + "\"" == info.extraInfo)
                 {
+                    networkCallback = null
                     connectivityManager.unregisterNetworkCallback(this)
                     listener.onConnected()
                 }
@@ -162,6 +162,7 @@ class WiFiScanner (context: Context) {
         if (networkCallback != null){
             val connectivityManager = mContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
             connectivityManager.unregisterNetworkCallback(networkCallback)
+            networkCallback = null
         }
     }
 
