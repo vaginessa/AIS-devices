@@ -57,13 +57,14 @@ class AisDeviceController(context: Context): WiFiScanner.OnWiFiConnectedListener
 
         mWiFiScanner.disconnect()
 
+        mConnectingCanceled = false
         mWiFiScanner.registerOnConncted(this, ssid)
 
         // create new connection
         mDeviceNetworkId = mWiFiScanner.addNewNetwork(ssid)
         mWiFiScanner.connectToNetwork(mDeviceNetworkId!!)
-        mConnectingCanceled = false
-        mHandlerTimeout.postDelayed(timeout, 5000)
+        if (!mConnectingCanceled)
+            mHandlerTimeout.postDelayed(timeout, 5000)
     }
 
     private val timeout = object : Runnable {
@@ -81,7 +82,7 @@ class AisDeviceController(context: Context): WiFiScanner.OnWiFiConnectedListener
 
     override fun onConnected() {
         mConnectingCanceled = true
-        mHandlerTimeout.removeCallbacks(timeout)
+        mHandlerTimeout.removeCallbacksAndMessages(timeout)
         try {
             val url = URLEncoder.encode("Backlog FriendlyName1 $mFriendlyName; SSId1 $mAPName; Password1 $mAPPassword","UTF-8")
             if (connectAndConfiguraDevice(url)) {
