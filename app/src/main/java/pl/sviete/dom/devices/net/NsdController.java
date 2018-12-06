@@ -5,7 +5,7 @@ import android.content.Context;
 import android.net.nsd.NsdManager;
 import android.net.nsd.NsdServiceInfo;
 import android.util.Log;
-import pl.sviete.dom.devices.net.Models.DeviceInfo;
+import pl.sviete.dom.devices.net.models.DeviceInfo;
 
 import java.net.InetAddress;
 

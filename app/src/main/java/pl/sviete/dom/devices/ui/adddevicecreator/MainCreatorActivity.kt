@@ -1,4 +1,4 @@
-package pl.sviete.dom.devices.ui.AddDeviceCreator
+package pl.sviete.dom.devices.ui.adddevicecreator
 
 import android.support.v7.app.AppCompatActivity
 import android.support.v4.app.Fragment
@@ -6,12 +6,12 @@ import android.os.Bundle
 import android.view.View
 import kotlinx.android.synthetic.main.activity_main_creator.*
 import pl.sviete.dom.devices.R
-import pl.sviete.dom.devices.net.Models.AccessPointInfo
+import pl.sviete.dom.devices.net.models.AccessPointInfo
 import java.lang.Exception
 import pl.sviete.dom.devices.net.AisDeviceController
 import android.content.Intent
 import android.widget.Toast
-import pl.sviete.dom.devices.Models.AisDevice
+import pl.sviete.dom.devices.models.AisDevice
 
 
 class MainCreatorActivity : AppCompatActivity(), StartCreatorFragment.OnNextStepListener, AplistCreatorFragment.OnAPSelectedListener

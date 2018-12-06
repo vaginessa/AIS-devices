@@ -1,4 +1,4 @@
-package pl.sviete.dom.devices.ui.AddDeviceCreator
+package pl.sviete.dom.devices.ui.adddevicecreator
 
 import android.content.Context
 import android.os.Bundle
@@ -86,7 +86,7 @@ class ApDataCreatorFragment : Fragment(), AdapterView.OnItemSelectedListener {
         with (sharedPref.edit()) {
             putString("ap_name", apName)
             putString("password", password)
-            commit()
+            apply()
         }
         mAPName = apName
         mPassword = password

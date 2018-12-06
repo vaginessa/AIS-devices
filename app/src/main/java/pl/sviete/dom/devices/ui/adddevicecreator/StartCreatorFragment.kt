@@ -1,14 +1,12 @@
-package pl.sviete.dom.devices.ui.AddDeviceCreator
+package pl.sviete.dom.devices.ui.adddevicecreator
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import kotlinx.android.synthetic.main.fragment_creator_start.*
 import pl.sviete.dom.devices.R
-import android.app.Activity
 import android.content.Context
 
 

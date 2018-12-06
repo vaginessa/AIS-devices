@@ -1,4 +1,4 @@
-package pl.sviete.dom.devices.Models
+package pl.sviete.dom.devices.models
 
 import java.io.Serializable
 

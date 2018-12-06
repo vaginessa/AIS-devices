@@ -30,7 +30,7 @@
                 android:label="@string/settings">
         </activity>
         <activity
-                android:name=".ui.AddDeviceCreator.MainCreatorActivity"
+                android:name=".ui.adddevicecreator.MainCreatorActivity"
                 android:label="@string/title_activity_main_creator"
                 android:parentActivityName=".MainActivity"
                 android:theme="@style/AppTheme.NoActionBar">

@@ -1,4 +1,4 @@
-package pl.sviete.dom.devices.ui.AddDeviceCreator
+package pl.sviete.dom.devices.ui.adddevicecreator
 
 import android.content.Context
 import android.graphics.Typeface
@@ -8,7 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import pl.sviete.dom.devices.R
 import kotlinx.android.synthetic.main.item_ap_list.view.*
-import pl.sviete.dom.devices.net.Models.AccessPointInfo
+import pl.sviete.dom.devices.net.models.AccessPointInfo
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.StyleSpan

@@ -1,4 +1,4 @@
-package pl.sviete.dom.devices.net.Models
+package pl.sviete.dom.devices.net.models
 
 data class AccessPointInfo(val ssid: String, var mac: String): Comparable<AccessPointInfo> {
 

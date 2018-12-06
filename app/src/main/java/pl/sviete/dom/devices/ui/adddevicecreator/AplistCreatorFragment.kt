@@ -1,4 +1,4 @@
-package pl.sviete.dom.devices.ui.AddDeviceCreator
+package pl.sviete.dom.devices.ui.adddevicecreator
 
 import android.content.Context
 import android.os.Bundle
@@ -10,7 +10,7 @@ import android.view.ViewGroup
 import pl.sviete.dom.devices.R
 import pl.sviete.dom.devices.net.WiFiScanner
 import kotlinx.android.synthetic.main.fragment_creator_aplist_.*
-import pl.sviete.dom.devices.net.Models.AccessPointInfo
+import pl.sviete.dom.devices.net.models.AccessPointInfo
 import java.util.*
 
 

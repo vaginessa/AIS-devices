@@ -19,8 +19,8 @@ import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.ListView
 import kotlinx.android.synthetic.main.content_main.*
-import pl.sviete.dom.devices.Models.AisDevice
-import pl.sviete.dom.devices.ui.AddDeviceCreator.MainCreatorActivity
+import pl.sviete.dom.devices.models.AisDevice
+import pl.sviete.dom.devices.ui.adddevicecreator.MainCreatorActivity
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 

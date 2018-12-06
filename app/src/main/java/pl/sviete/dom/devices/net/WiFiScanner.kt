@@ -9,7 +9,7 @@ import android.net.wifi.WifiConfiguration
 import android.net.wifi.WifiManager
 import android.util.Log
 import android.net.*
-import pl.sviete.dom.devices.net.Models.AccessPointInfo
+import pl.sviete.dom.devices.net.models.AccessPointInfo
 
 class WiFiScanner (context: Context) {
     private val mContext = context
