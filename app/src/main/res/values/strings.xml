@@ -91,4 +91,10 @@
     <string name="welcome_add_new_device">Dodaj swoje pierwsze urządzenie</string>
     <string name="next">Dalej</string>
     <string name="name">Nazwa</string>
+    <string name="password">Hasło</string>
+    <string name="ap_data_info">Podaj dane swojej sieci WiFi do której chcesz podłączyć urządzenie AIS</string>
+    <string name="connecting_info">Wybierz \"Połącz\" by rozpocząć proces połączenia urządzenia do twojej lokalnej sieci
+        WiFi. Podczas tego procesu konieczne jest rozłączenie tego urządzenia z sieci WiFi, zajmie to tylko chwilę.
+    </string>
+    <string name="save_password">Zapisz hasło</string>
 </resources>

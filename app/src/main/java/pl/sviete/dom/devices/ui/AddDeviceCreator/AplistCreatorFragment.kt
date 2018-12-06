@@ -41,7 +41,7 @@ class AplistCreatorFragment : Fragment(), WiFiScanner.OnScanResultsListener {
         mAisAdapter = APAdapter(mAisList, context!!, object : APAdapter.OnItemClickListener {
             override fun onItemClick(item: AccessPointInfo) {
                 mWifi?.stopScan()
-                mApSelectedListener?.onAPSelected(item)
+                mApSelectedListener?.onAPSelected(item, mAisList)
             }
         })
         rv_ap_list.adapter = mAisAdapter
@@ -86,6 +86,6 @@ class AplistCreatorFragment : Fragment(), WiFiScanner.OnScanResultsListener {
     }
 
     interface OnAPSelectedListener{
-        fun onAPSelected(apInfo: AccessPointInfo)
+        fun onAPSelected(selectedAP: AccessPointInfo, accessibleAP: List<AccessPointInfo>)
     }
 }

@@ -20,6 +20,7 @@ class MainCreatorActivity : AppCompatActivity(), StartCreatorFragment.OnNextStep
 
 
     private var mAPInfo: AccessPointInfo? = null
+    private var mAccessibleAP: List<AccessPointInfo>? = null
     private val mIntentResult = Intent()
     private val mAisCtrl = AisDeviceController(this)
     private var mCurrentFragment: Fragment? = null
@@ -39,7 +40,7 @@ class MainCreatorActivity : AppCompatActivity(), StartCreatorFragment.OnNextStep
             return
         }
 
-        val firstFragment = getFragment(0)
+        val firstFragment = getFragment(0)!!
         supportFragmentManager.beginTransaction()
             .add(R.id.fragment_container, firstFragment)
             .commit()
@@ -55,8 +56,9 @@ class MainCreatorActivity : AppCompatActivity(), StartCreatorFragment.OnNextStep
         changeFragment(1)
     }
 
-    override fun onAPSelected(apInfo : AccessPointInfo){
+    override fun onAPSelected(apInfo : AccessPointInfo, accessibleAP: List<AccessPointInfo>){
         mAPInfo = apInfo
+        mAccessibleAP = accessibleAP
         changeFragment(2, true)
     }
 
@@ -108,6 +110,7 @@ class MainCreatorActivity : AppCompatActivity(), StartCreatorFragment.OnNextStep
 
     private fun changeFragment(position: Int, canBack: Boolean = false) {
         val newFragment = getFragment(position)
+        if (newFragment == null) return
         val transaction = supportFragmentManager.beginTransaction()
 
         transaction.setCustomAnimations(R.anim.slide_out_right, R.anim.exit_to_left, R.anim.slide_in_left, R.anim.exit_to_right)
@@ -118,7 +121,7 @@ class MainCreatorActivity : AppCompatActivity(), StartCreatorFragment.OnNextStep
         mCurrentFragment = newFragment
     }
 
-    private fun getFragment(position: Int): Fragment {
+    private fun getFragment(position: Int): Fragment? {
         when (position) {
             0 -> return StartCreatorFragment.newInstance()
             1 -> return AplistCreatorFragment.newInstance()
@@ -130,7 +133,15 @@ class MainCreatorActivity : AppCompatActivity(), StartCreatorFragment.OnNextStep
                 nameFragment.arguments = bundle
                 return nameFragment
             }
-            3 -> return ApDataCreatorFragment.newInstance()
+            3 ->{
+                val aps = mAccessibleAP!!.filter { x -> x != mAPInfo }.map { x -> x.ssid }.toTypedArray()
+                if (aps.isEmpty()) return null
+                val bundle = Bundle()
+                bundle.putStringArray("accessibleAP", aps)
+                val fragment = ApDataCreatorFragment.newInstance()
+                fragment.arguments = bundle
+                return fragment
+            }
         }
         throw Exception("Not implemented")
     }
